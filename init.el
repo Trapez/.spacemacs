@@ -33,7 +33,9 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(yaml
+   '(sql
+     asciidoc
+     yaml
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -62,10 +64,12 @@ This function should only modify configuration layer settings."
      import-js
      lsp
      dap
+     react
      (python :variables
              python-backend 'lsp
+             python-lsp-server 'pyls
              python-fill-column 99
-             python-formatter 'yapf
+             python-formatter 'black
              python-format-on-save t
              python-sort-imports-on-save t
              python-pipenv-activate t)
@@ -83,7 +87,7 @@ This function should only modify configuration layer settings."
                  typescript-import-tool 'import-js)
      common-lisp
      (java :variables
-           java-backend 'lsp)
+           java-backend 'meghanada)
      ;; spell-checking
      syntax-checking
      treemacs
@@ -209,6 +213,11 @@ It should only modify the values of Spacemacs settings."
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
 
+   ;; Default major mode for a new empty buffer. Possible values are mode
+   ;; names such as `text-mode'; and `nil' to use Fundamental mode.
+   ;; (default `text-mode')
+   dotspacemacs-new-empty-buffer-major-mode 'text-mode
+
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
 
@@ -236,12 +245,15 @@ It should only modify the values of Spacemacs settings."
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
 
-   ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
-   ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 14
+   ;; Default font or prioritized list of fonts.
+   dotspacemacs-default-font '("Iosevka SS08"
+                               :size 10.3
                                :weight normal
                                :width normal)
+   ;; dotspacemacs-default-font '("Source Code Pro"
+   ;;                             :size 14
+   ;;                             :weight normal
+   ;;                             :width normal)
 
    ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
@@ -342,6 +354,11 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil) (Emacs 24.4+ only)
    dotspacemacs-maximized-at-startup nil
 
+   ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
+   ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
+   ;; borderless fullscreen. (default nil)
+   dotspacemacs-undecorated-at-startup nil
+
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -369,10 +386,14 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-smooth-scrolling t
 
    ;; Control line numbers activation.
-   ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
-   ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
+   ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
+   ;; `prog-mode' and `text-mode' derivatives. If set to `relative', line
+   ;; numbers are relative. If set to `visual', line numbers are also relative,
+   ;; but lines are only visual lines are counted. For example, folded lines
+   ;; will not be counted and wrapped lines are counted as multiple lines.
    ;; This variable can also be set to a property list for finer control:
    ;; '(:relative nil
+   ;;   :visual nil
    ;;   :disabled-for-modes dired-mode
    ;;                       doc-view-mode
    ;;                       markdown-mode
@@ -380,8 +401,9 @@ It should only modify the values of Spacemacs settings."
    ;;                       pdf-view-mode
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
+   ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers t
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -492,14 +514,21 @@ before packages are loaded."
   (setq-default recentf-auto-cleanup 300
                 create-lockfiles nil
                 truncate-lines t
+                js-indent-level 2
+                paradox-github-token t
+                meghanada-telemetry-enable t
                 ;; js2-mode
-                ;; js2-basic-offset 2
+                js2-basic-offset 2
+                ;; lsp-ui
+                lsp-ui-doc-use-childframe nil
+                lsp-ui-doc-use-webkit t
+                lsp-ui-flycheck-enable t
                 ;; web-mode
-                ;; css-indent-offset 2
-                ;; web-mode-markup-indent-offset 2
-                ;; web-mode-css-indent-offset 2
-                ;; web-mode-code-indent-offset 2
-                ;; web-mode-attr-indent-offset 2
+                css-indent-offset 2
+                web-mode-markup-indent-offset 2
+                web-mode-css-indent-offset 2
+                web-mode-code-indent-offset 2
+                web-mode-attr-indent-offset 2
                 ;; Org mode
                 org-journal-dir "~/Dropbox/org/journal/"
                 org-journal-file-format "%Y-%m-%d"
@@ -509,23 +538,31 @@ before packages are loaded."
                 org-journal-time-format ""
                 org-support-shift-select t
                 ;; Meghanada
-                ;; meghanada-gradle-version "5.4.1"
-                ;; meghanada-use-flycheck t
+                meghanada-cache-in-project t
+                meghanada-use-company t
+                meghanada-use-flycheck t
+                meghanada-gradle-version "5.4.1"
+
                 ;; Slime
                 slime-lisp-implementations `((sbcl    ("sbcl" "--dynamic-space-size" "2000"))
                                              (roswell ("ros" "-Q" "run")))
-                slime-default-lisp 'roswell)
-
-  (with-eval-after-load 'slime
-      (load (expand-file-name "~/.roswell/helper.el")))
+                slime-default-lisp 'roswell
+                )
 
   (with-eval-after-load 'web-mode
     (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
 
+  (with-eval-after-load 'slime
+    (load (expand-file-name "~/.roswell/lisp/quicklisp/slime-helper.el")))
+  
   ;; (add-hook 'js2-mode-hook 'prettier-js-mode)
   ;; (add-hook 'web-mode-hook 'prettier-js-mode)
+  (add-hook 'java-mode-hook (lambda ()
+                              (setq c-basic-offset 2
+                                    tab-width 2
+                                    indent-tabs-mode t)))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -540,17 +577,10 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(evil-want-Y-yank-to-eol nil)
- '(lsp-pyls-configuration-sources ["flake8"])
- '(lsp-pyls-plugins-pylint-enabled nil)
- '(lsp-ui-doc-use-childframe nil)
- '(lsp-ui-doc-use-webkit t)
- '(lsp-ui-flycheck-enable nil)
- '(lsp-ui-sideline-show-symbol nil t)
+ '(exec-path
+   '("/home/trap/.local/share/virtualenvs/ms-pyls-4jkgO3TC/bin" "/usr/local/bin" "/usr/local/sbin" "/usr/bin" "/usr/lib/jvm/default/bin" "/usr/bin/site_perl" "/usr/bin/vendor_perl" "/usr/bin/core_perl" "/usr/lib/emacs/27.0.50/x86_64-pc-linux-gnu" "/home/trap/.node_modules/bin" "/home/trap/.local/bin" "/home/trap/.emacs/mspyls"))
  '(package-selected-packages
-   '(yaml-mode company-emacs-eclim eclim yapfify xterm-color ws-butler winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tide typescript-mode tagedit spaceline powerline smex smeargle slime-company slime slim-mode shell-pop scss-mode sass-mode restart-emacs request rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox spinner ox-reveal orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc ivy-hydra indent-guide hydra lv hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make haml-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip flycheck flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit transient git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump diminish diff-hl define-word cython-mode counsel-projectile projectile pkg-info epl counsel swiper ivy company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode clean-aindent-mode bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed async anaconda-mode pythonic f s aggressive-indent adaptive-wrap ace-window ace-link avy ac-ispell auto-complete popup doom-themes dash))
- '(paradox-github-token t)
- '(python-shell-virtualenv-root ""))
+   '(sqlup-mode sql-indent adoc-mode markup-faces yaml-mode company-emacs-eclim eclim yapfify xterm-color ws-butler winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tide typescript-mode tagedit spaceline powerline smex smeargle slime-company slime slim-mode shell-pop scss-mode sass-mode restart-emacs request rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox spinner ox-reveal orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc ivy-hydra indent-guide hydra lv hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make haml-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip flycheck flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit transient git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump diminish diff-hl define-word cython-mode counsel-projectile projectile pkg-info epl counsel swiper ivy company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode clean-aindent-mode bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed async anaconda-mode pythonic f s aggressive-indent adaptive-wrap ace-window ace-link avy ac-ispell auto-complete popup doom-themes dash)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -559,17 +589,3 @@ This function is called at the very end of Spacemacs initialization."
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
 )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (company-emacs-eclim eclim yapfify xterm-color ws-butler winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tide typescript-mode tagedit spaceline powerline smex smeargle slime-company slime slim-mode shell-pop scss-mode sass-mode restart-emacs request rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox spinner ox-reveal orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc ivy-hydra indent-guide hydra lv hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make haml-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip flycheck flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit transient git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump diminish diff-hl define-word cython-mode counsel-projectile projectile pkg-info epl counsel swiper ivy company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode clean-aindent-mode bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed async anaconda-mode pythonic f s aggressive-indent adaptive-wrap ace-window ace-link avy ac-ispell auto-complete popup doom-themes dash))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
