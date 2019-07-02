@@ -33,15 +33,17 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(sql
-     asciidoc
-     yaml
+   '(
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ;; helm
+     (sql :variables
+          sql-capitalize-keywords t
+          sql-auto-indent t)
+     asciidoc
+     yaml
      ivy
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
@@ -65,15 +67,24 @@ This function should only modify configuration layer settings."
      lsp
      dap
      react
+     ;; (python :variables
+     ;;         python-fill-column 99
+     ;;         python-formatter 'yapf
+     ;;         python-format-on-save t
+     ;;         python-sort-imports-on-save t
+     ;;         python-pipenv-activate t)
      (python :variables
              python-backend 'lsp
-             python-lsp-server 'pyls
+             python-lsp-server 'mspyls
+             ;; python-lsp-git-root "~/python-language-server"
              python-fill-column 99
-             python-formatter 'black
+             python-formatter 'yapf
              python-format-on-save t
              python-sort-imports-on-save t
              python-pipenv-activate t)
-     (html :variables web-fmt-tool 'prettier)
+     (html :variables
+           web-fmt-tool 'prettier
+           css-enable-lsp t)
      (javascript :variables
                  javascript-backend 'lsp
                  javascript-fmt-tool 'prettier
@@ -87,8 +98,11 @@ This function should only modify configuration layer settings."
                  typescript-import-tool 'import-js)
      common-lisp
      (java :variables
-           java-backend 'meghanada)
-     ;; spell-checking
+           java-backend 'lsp)
+     (spell-checking :variables
+                     spell-checking-enable-by-default nil
+                     spell-checking-enable-auto-dictionary t
+                     enable-flyspell-auto-completion t)
      syntax-checking
      treemacs
      version-control)
@@ -229,8 +243,11 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(doom-vibrant
-                         spacemacs-dark
-                         spacemacs-light)
+                         doom-spacegrey
+                         doom-nord
+                         doom-city-lights
+                         doom-one
+                         adwaita)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -247,9 +264,11 @@ It should only modify the values of Spacemacs settings."
 
    ;; Default font or prioritized list of fonts.
    dotspacemacs-default-font '("Iosevka SS08"
-                               :size 10.3
+                               :size 10.0
                                :weight normal
-                               :width normal)
+                               :width normal
+                               ;; :powerline-scale 1.1
+                               )
    ;; dotspacemacs-default-font '("Source Code Pro"
    ;;                             :size 14
    ;;                             :weight normal
@@ -523,6 +542,7 @@ before packages are loaded."
                 lsp-ui-doc-use-childframe nil
                 lsp-ui-doc-use-webkit t
                 lsp-ui-flycheck-enable t
+                lsp-project-blacklist nil
                 ;; web-mode
                 css-indent-offset 2
                 web-mode-markup-indent-offset 2
@@ -554,8 +574,8 @@ before packages are loaded."
     (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
 
-  (with-eval-after-load 'slime
-    (load (expand-file-name "~/.roswell/lisp/quicklisp/slime-helper.el")))
+  ;; (with-eval-after-load 'slime
+  ;;   (load (expand-file-name "~/.roswell/lisp/quicklisp/slime-helper.el")))
   
   ;; (add-hook 'js2-mode-hook 'prettier-js-mode)
   ;; (add-hook 'web-mode-hook 'prettier-js-mode)
@@ -564,7 +584,7 @@ before packages are loaded."
                                     tab-width 2
                                     indent-tabs-mode t)))
   )
-
+ 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
 (defun dotspacemacs/emacs-custom-settings ()
@@ -578,7 +598,13 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(sqlup-mode sql-indent adoc-mode markup-faces yaml-mode company-emacs-eclim eclim yapfify xterm-color ws-butler winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tide typescript-mode tagedit spaceline powerline smex smeargle slime-company slime slim-mode shell-pop scss-mode sass-mode restart-emacs request rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox spinner ox-reveal orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc ivy-hydra indent-guide hydra lv hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make haml-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip flycheck flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit transient git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump diminish diff-hl define-word cython-mode counsel-projectile projectile pkg-info epl counsel swiper ivy company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode clean-aindent-mode bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed async anaconda-mode pythonic f s aggressive-indent adaptive-wrap ace-window ace-link avy ac-ispell auto-complete popup doom-themes dash)))
+   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill treemacs-projectile treemacs-evil toc-org tide tagedit symon symbol-overlay string-inflection sql-indent spaceline-all-the-icons smex smeargle slime-company slim-mode shell-pop scss-mode sass-mode rjsx-mode restart-emacs rainbow-delimiters pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox overseer orgit org-re-reveal org-projectile org-present org-pomodoro org-mime org-journal org-download org-cliplink org-bullets org-brain open-junk-file nodejs-repl nameless mwim mvn multi-term move-text mmm-mode meghanada maven-test-mode markdown-toc magit-svn magit-gitflow lsp-ui lsp-treemacs lsp-python-ms lsp-java lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc ivy-yasnippet ivy-xref ivy-purpose ivy-hydra indent-guide importmagic import-js impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-make helm-lsp groovy-mode groovy-imports gradle-mode gotham-theme google-translate golden-ratio gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flyspell-correct-ivy flycheck-pos-tip flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker diminish diff-hl devdocs define-word dap-mode cython-mode counsel-projectile counsel-css company-web company-tern company-statistics company-quickhelp company-lsp company-emacs-eclim company-anaconda common-lisp-snippets column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote blacken auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile alect-themes aggressive-indent adoc-mode add-node-modules-path ace-link ac-ispell))
+ '(safe-local-variable-values
+   '((flycheck-checker . flake8)
+     (typescript-backend . tide)
+     (typescript-backend . lsp)
+     (javascript-backend . tern)
+     (javascript-backend . lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
