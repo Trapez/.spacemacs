@@ -47,7 +47,7 @@ This function should only modify configuration layer settings."
      ivy
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
-                      auto-completion-enable-help-tooltip t
+                      auto-completion-idle-delay 0.2
                       auto-completion-enable-sort-by-usage t)
      better-defaults
      emacs-lisp
@@ -67,6 +67,8 @@ This function should only modify configuration layer settings."
      lsp
      dap
      react
+     restclient
+     pdf
      ;; (python :variables
      ;;         python-fill-column 99
      ;;         python-formatter 'yapf
@@ -78,7 +80,7 @@ This function should only modify configuration layer settings."
              python-lsp-server 'mspyls
              ;; python-lsp-git-root "~/python-language-server"
              python-fill-column 99
-             python-formatter 'yapf
+             python-formatter 'black
              python-format-on-save t
              python-sort-imports-on-save t
              python-pipenv-activate t)
@@ -93,6 +95,7 @@ This function should only modify configuration layer settings."
                  node-add-modules-path t)
      (typescript :variables
                  typescript-backend 'lsp
+                 typescript-lsp-linter nil
                  typescript-fmt-tool 'typescript-formatter
                  typescript-fmt-on-save t
                  typescript-import-tool 'import-js)
@@ -145,10 +148,10 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-enable-emacs-pdumper nil
 
-   ;; File path pointing to emacs 27.1 executable compiled with support
-   ;; for the portable dumper (this is currently the branch pdumper).
-   ;; (default "emacs-27.0.50")
-   dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
+   ;; Name of executable file pointing to emacs 27+. This executable must be
+   ;; in your PATH.
+   ;; (default "emacs")
+   dotspacemacs-emacs-pdumper-executable-file "emacs"
 
    ;; Name of the Spacemacs dump file. This is the file will be created by the
    ;; portable dumper in the cache directory under dumps sub-directory.
@@ -543,6 +546,12 @@ before packages are loaded."
                 lsp-ui-doc-use-webkit t
                 lsp-ui-flycheck-enable t
                 lsp-project-blacklist nil
+                ;; magit
+                ;; magit-diff-refine-hunk 'all
+                ;; magit-diff-adjust-tab-width t
+                ;; magit-diff-paint-whitespace 'all
+                ;; magit-diff-highlight-trailing 'all
+                ;; magit-diff-highlight-indentation 'all
                 ;; web-mode
                 css-indent-offset 2
                 web-mode-markup-indent-offset 2
@@ -597,7 +606,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
+  '(package-selected-packages
    '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill treemacs-projectile treemacs-evil toc-org tide tagedit symon symbol-overlay string-inflection sql-indent spaceline-all-the-icons smex smeargle slime-company slim-mode shell-pop scss-mode sass-mode rjsx-mode restart-emacs rainbow-delimiters pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox overseer orgit org-re-reveal org-projectile org-present org-pomodoro org-mime org-journal org-download org-cliplink org-bullets org-brain open-junk-file nodejs-repl nameless mwim mvn multi-term move-text mmm-mode meghanada maven-test-mode markdown-toc magit-svn magit-gitflow lsp-ui lsp-treemacs lsp-python-ms lsp-java lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc ivy-yasnippet ivy-xref ivy-purpose ivy-hydra indent-guide importmagic import-js impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-make helm-lsp groovy-mode groovy-imports gradle-mode gotham-theme google-translate golden-ratio gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flyspell-correct-ivy flycheck-pos-tip flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker diminish diff-hl devdocs define-word dap-mode cython-mode counsel-projectile counsel-css company-web company-tern company-statistics company-quickhelp company-lsp company-emacs-eclim company-anaconda common-lisp-snippets column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote blacken auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile alect-themes aggressive-indent adoc-mode add-node-modules-path ace-link ac-ispell))
  '(safe-local-variable-values
    '((flycheck-checker . flake8)
