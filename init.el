@@ -32,7 +32,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(systemd
+   '(
+     systemd
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -78,45 +79,50 @@ This function should only modify configuration layer settings."
      (python :variables
              python-lsp-server 'mspyls
              python-fill-column 99
-             python-formatter 'yapf
+             python-formatter 'lsp
              python-format-on-save t
+             python-test-runner 'pytest
              python-sort-imports-on-save t
              python-pipenv-activate t)
-     (html :variables
-           web-fmt-tool 'prettier
-           css-enable-lsp t)
-     (javascript :variables
-                 javascript-backend 'lsp
-                 javascript-fmt-tool 'prettier
-                 javascript-fmt-on-save t
-                 javascript-import-tool 'import-js
-                 node-add-modules-path t)
-     (typescript :variables
-                 typescript-backend 'lsp
-                 typescript-lsp-linter nil
-                 typescript-fmt-tool 'typescript-formatter
-                 typescript-fmt-on-save t
-                 typescript-import-tool 'import-js)
-     common-lisp
+     ;; (html :variables
+     ;;       web-fmt-tool 'prettier
+     ;;       css-enable-lsp t)
+     ;; (javascript :variables
+     ;;             javascript-backend 'lsp
+     ;;             javascript-fmt-tool 'prettier
+     ;;             javascript-fmt-on-save t
+     ;;             javascript-import-tool 'import-js
+     ;;             javascript-repl 'skewer
+     ;;             node-add-modules-path t)
+     ;; (typescript :variables
+     ;;             typescript-backend 'lsp
+     ;;             typescript-lsp-linter nil
+     ;;             typescript-fmt-tool 'typescript-formatter
+     ;;             typescript-fmt-on-save t
+     ;;             typescript-import-tool 'import-js)
+     ;; common-lisp
      (java :variables
-           java-backend 'lsp)
-     (go :variables
-         go-backend 'lsp
-         go-tab-width 4
-         go-format-before-save t
-         godoc-at-point-function 'godoc-gogetdoc)
-     (clojure :variables
-              clojure-enable-fancify-symbols t
-              clojure-enable-linters 'clj-kondo
-              clojure-enable-sayid t
-              clojure-enable-clj-refactor t)
-     (spell-checking :variables
-                     spell-checking-enable-by-default nil
-                     spell-checking-enable-auto-dictionary t
-                     enable-flyspell-auto-completion t)
+           java-backend 'meghanada)
+     ;; (scala :variables
+     ;;        scala-backend 'scala-metals)
+     ;; (go :variables
+     ;;     go-backend 'lsp
+     ;;     go-tab-width 4
+     ;;     go-format-before-save t
+     ;;     godoc-at-point-function 'godoc-gogetdoc)
+     ;; (clojure :variables
+     ;;          clojure-enable-fancify-symbols t
+     ;;          clojure-enable-linters 'clj-kondo
+     ;;          clojure-enable-sayid t
+     ;;          clojure-enable-clj-refactor t)
+     ;; (spell-checking :variables
+     ;;                 spell-checking-enable-by-default nil
+     ;;                 spell-checking-enable-auto-dictionary t
+     ;;                 enable-flyspell-auto-completion t)
      syntax-checking
      treemacs
-     version-control)
+     version-control
+     )
 
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -215,6 +221,11 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'vim)
    dotspacemacs-editing-style 'hybrid
 
+   ;; If non-nil show the version string in the Spacemacs buffer. It will
+   ;; appear as (spacemacs version)@(emacs version)
+   ;; (default t)
+   dotspacemacs-startup-buffer-show-version t
+
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
    ;; banner, `random' chooses a random text banner in `core/banners'
@@ -271,15 +282,29 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-colorize-cursor-according-to-state t
 
    ;; Default font or prioritized list of fonts.
-   ;; dotspacemacs-default-font '("Iosevka Term SS08"
-   ;;                             :size 10.0
+   dotspacemacs-default-font '("Iosevka Term"
+                               :size 14.0
+                               :weight normal
+                               :width normal
+                               ;; :powerline-scale 1.1
+   )
+   ;; dotspacemacs-default-font '("Source Code Pro"
+   ;;                             :size 14.0
    ;;                             :weight normal
    ;;                             :width normal
-   ;;                             :powerline-scale 1.1)
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 10.0
-                               :weight normal
-                               :width normal)
+   ;;                             )
+
+   ;; dotspacemacs-default-font '("SauceCodePro Nerd Font"
+   ;;                             :size 14.0
+   ;;                             :style Book
+   ;;                             :weight normal
+   ;;                             :width normal)
+
+   ;; dotspacemacs-default-font '("DejaVuSansMono Nerd Font Mono"
+   ;;                             :size 14.0
+   ;;                             :style Book
+   ;;                             :weight normal
+   ;;                             :width normal)
 
    ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
@@ -300,8 +325,10 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-major-mode-leader-key ","
 
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
-   ;; (default "C-M-m")
-   dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+   ;; (default "C-M-m" for terminal mode, "<M-return>" for GUI mode).
+   ;; Thus M-RET should work as leader key in both GUI and terminal modes.
+   ;; C-M-m also should work in terminal mode, but not in GUI mode.
+   dotspacemacs-major-mode-emacs-leader-key (if window-system "<M-return>" "C-M-m")
 
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs `C-i', `TAB' and `C-m', `RET'.
@@ -451,7 +478,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, start an Emacs server if one is not already running.
    ;; (default nil)
-   dotspacemacs-enable-server nil
+   dotspacemacs-enable-server t
 
    ;; Set the emacs server socket location.
    ;; If nil, uses whatever the Emacs default is, otherwise a directory path
@@ -499,6 +526,13 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
 
+   ;; If non nil activate `clean-aindent-mode' which tries to correct
+   ;; virtual indentation of simple modes. This can interfer with mode specific
+   ;; indent handling like has been reported for `go-mode'.
+   ;; If it does deactivate it here.
+   ;; (default t)
+   dotspacemacs-use-clean-aindent-mode t
+
    ;; Either nil or a number of seconds. If non-nil zone out after the specified
    ;; number of seconds. (default nil)
    dotspacemacs-zone-out-when-idle nil
@@ -545,11 +579,11 @@ before packages are loaded."
                 ;; js2-mode
                 js2-basic-offset 2
                 ;; lsp-ui
-                lsp-ui-doc-use-childframe nil
+                lsp-ui-doc-use-childframe t
                 lsp-ui-doc-use-webkit t
                 lsp-ui-flycheck-enable t
                 lsp-project-blacklist nil
-                ;; magit
+               ;; magit
                 ;; magit-diff-refine-hunk 'all
                 ;; magit-diff-adjust-tab-width t
                 ;; magit-diff-paint-whitespace 'all
@@ -603,7 +637,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-)
+ '(evil-want-Y-yank-to-eol nil)
+ '(httpd-host 'local)
+ '(lsp-ui-doc-max-height 20)
+ '(package-selected-packages
+   '(know-your-http-well pos-tip flycheck pkg-info treemacs pfuture ace-window avy spinner ht dash-functional company yasnippet auto-complete popup pyvenv epc ctable concurrent deferred helm-pydoc anaconda-mode pythonic helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-ls-git helm-flx helm-descbinds helm-ag ace-jump-helm-line helm helm-core epl git commander f dash s yasnippet-snippets org-journal lsp-treemacs flyspell-correct-ivy flyspell-correct flycheck-elsa cask ansi package-build shut-up evil-nerd-commenter doom-themes doom-modeline dap-mode package-lint lsp-mode markdown-mode spaceline magit org-plus-contrib evil yapfify yaml-mode xterm-color ws-butler writeroom-mode winum which-key wgrep web-mode web-beautify vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill treemacs-projectile treemacs-magit treemacs-evil tree-mode toc-org tide terminal-here tagedit systemd symon symbol-overlay string-inflection sqlup-mode sql-indent spaceline-all-the-icons smex smeargle slime-company slim-mode shrink-path shell-pop scss-mode sass-mode rjsx-mode restart-emacs rainbow-delimiters pytest pyenv-mode py-isort pug-mode prettier-js powerline popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el password-generator paradox overseer orgit org-re-reveal org-projectile org-present org-pomodoro org-mime org-download org-cliplink org-bullets org-brain open-junk-file ob-restclient ob-http noflet nodejs-repl nameless mwim mvn multi-term move-text mmm-mode meghanada maven-test-mode markdown-toc magit-svn magit-gitflow lsp-ui lsp-python-ms lsp-java lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc ivy-yasnippet ivy-xref ivy-purpose ivy-hydra indent-guide importmagic import-js impatient-mode hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-make groovy-mode groovy-imports gradle-mode goto-chg google-translate golden-ratio gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flyspell-popup flycheck-pos-tip flycheck-package flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode dockerfile-mode docker diminish diff-hl devdocs define-word cython-mode counsel-projectile counsel-css company-web company-tern company-statistics company-restclient company-lsp company-anaconda common-lisp-snippets column-enforce-mode clean-aindent-mode centered-cursor-mode bui browse-at-remote blacken auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adoc-mode add-node-modules-path ace-link ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
